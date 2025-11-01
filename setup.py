@@ -31,6 +31,7 @@ setup(
             'wikipedia = textproc.filters.wikipedia:wikipedia',
             'each = textproc.filters.each:each',
             'chunk = textproc.filters.chunk:chunk',
+            'templated_chunked = textproc.filters.templated_chunked:templated_chunked',
         ],
     },
     include_package_data=True, 

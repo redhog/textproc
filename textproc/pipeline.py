@@ -2,7 +2,11 @@ import asyncio
 import aiostream.stream
 from typing import Any, AsyncIterator, Callable, Dict, List
 from importlib.metadata import entry_points
-        
+import logging
+import json
+
+logger = logging.getLogger(__name__)
+
 class Pipeline:
     """Asynchronous data processing pipeline defined by a JSON DSL."""
 
@@ -25,7 +29,10 @@ class Pipeline:
             if ep is None:
                 raise ValueError(f"No entry point named '{func_name}' in group textproc.filter")
 
-            compiled.append((ep.load(), kwargs))
+            kwargs = dict(kwargs)
+            description = kwargs.pop("description", func_name)
+            
+            compiled.append((description, ep.load(), kwargs))
 
         return compiled
 
@@ -35,7 +42,8 @@ class Pipeline:
         if not isinstance(current_stream, AsyncIterator):
             current_stream = aiostream.stream.iterate(current_stream)
             
-        for func, kwargs in self.compiled_steps:
+        for func_name, func, kwargs in self.compiled_steps:
+            logger.info("Executing %s" % (func_name,))
             current_stream = func(self, current_stream, **kwargs)
 
         async for item in current_stream:
