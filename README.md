@@ -9,3 +9,8 @@ This repository contains a minimalistic text processing pipeline framework. Nota
 * jsonpaths for fetching data items
 
 See the [full pipeline example](Full%20pipeline.ipynb) for further details.
+
+# Possible future development
+
+* Use keybert for keyword extraction
+* Pairwize comparison for deduplication or entries (with semantic distance culling to not get O(n^2) complexity)
