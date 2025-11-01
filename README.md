@@ -14,3 +14,8 @@ See the [full pipeline example](Full%20pipeline.ipynb) for further details.
 
 * Use keybert for keyword extraction
 * Pairwize comparison for deduplication or entries (with semantic distance culling to not get O(n^2) complexity)
+
+# Author & license
+
+Copyright 2025 by Egil Moeller
+Licensed under GPL 3.
