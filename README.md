@@ -8,6 +8,8 @@ This repository contains a minimalistic text processing pipeline framework. Nota
 * Can fetch wikipedia articles
 * jinja2 templates for prompts
 * jsonpaths for fetching data items
+* json schema for structured output
+* Chunking and merging filters
 
 See the [full pipeline example](Full%20pipeline.ipynb) for further details.
 
