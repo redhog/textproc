@@ -6,25 +6,25 @@ from jsonpath_ng import parse
 from .. import jsonutils
 from .. import decorators
 
-WIKIPEDIA_API_URL = "https://en.wikipedia.org/w/api.php"
-
 def set_by_path(item, key, value):
     if "." in key:
         path, name = key.rsplit(".", 1)
     parse(path).find(item)[0].value[name] = value
 
 @decorators.map
-async def wikipedia(pipeline, item, input_key, output_key=None):
+async def wikipedia(pipeline, item, input_key, output_key=None, language="en"):
     if output_key is None: output_key = input_key
     out = []
     for match in jsonutils.flatten_matches(parse(input_key).find(item)):
+        title, content = await _fetch_wikipedia(match, language)
         out.append({
             "name": match,
-            "content": await _fetch_wikipedia(match)})
+            "page_title": title,
+            "content": content})
     jsonutils.set_by_path(item, output_key, out)
     return item
 
-async def _fetch_wikipedia(person_name: str) -> str:    
+async def _fetch_wikipedia(person_name: str, language="en") -> str:    
     """
     Fetches a Wikipedia article and returns it as Markdown.
     """
@@ -32,9 +32,11 @@ async def _fetch_wikipedia(person_name: str) -> str:
         "User-Agent": "MyWikipediaBot/1.0 (https://example.com; email@example.com)"
     }
 
+    url = f"https://{language}.wikipedia.org/w/api.php"
+
     async with aiohttp.ClientSession(headers=headers) as session:
         async with session.get(
-                WIKIPEDIA_API_URL,
+                url,
                 params={
                     "action": "query",
                     "list": "search",
@@ -47,7 +49,7 @@ async def _fetch_wikipedia(person_name: str) -> str:
             page_title = search_result['query']['search'][0]['title']
             
         async with session.get(
-                WIKIPEDIA_API_URL,
+                url,
                 params={
                     "action": "parse",
                     "page": page_title,
@@ -59,4 +61,4 @@ async def _fetch_wikipedia(person_name: str) -> str:
             if not html_content:
                 return f"No content found for '{page_title}'"
 
-        return html2text.html2text(html_content)
+        return page_title, html2text.html2text(html_content)
