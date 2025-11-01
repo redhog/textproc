@@ -3,6 +3,7 @@
 This repository contains a minimalistic text processing pipeline framework. Notable features:
 
 * Fully asynchronous
+* Supports parallel LLM/web scraping calls
 * Uses langchain
 * Can fetch wikipedia articles
 * jinja2 templates for prompts
